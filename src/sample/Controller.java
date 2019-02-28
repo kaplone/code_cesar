@@ -1,9 +1,15 @@
 package sample;
 
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ObservableIntegerValue;
+import javafx.beans.value.ObservableStringValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -32,6 +38,15 @@ public class Controller implements Initializable {
     @FXML
     private CheckBox cesar;
 
+    @FXML
+    private Button down;
+    @FXML
+    private Button up;
+    @FXML
+    private TextField step;
+
+    private Property<String> observableStringValue;
+
     private StringProperty sortieProperty;
 
     private String tampon;
@@ -39,10 +54,14 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        step.setText("1");
+        observableStringValue = new SimpleStringProperty("1");
+
+        decalage.valueProperty().bindBidirectional(observableStringValue);
+
         tampon = "";
-        ObservableList<String> decalages = FXCollections.observableArrayList("1", "2", "288", "879", "1003", "8916", "8966", "15493", "116732", "136802");
+        ObservableList<String> decalages = FXCollections.observableArrayList("1", "879", "8948", "9021", "9444", "9505", "9560", "9720", "15493", "127532", "201670");
         decalage.setItems(decalages);
-        decalage.setValue("1");
 
         StringProperty entreeProperty = new SimpleStringProperty();
         sortieProperty = new SimpleStringProperty();
@@ -100,8 +119,32 @@ public class Controller implements Initializable {
             sortieProperty.setValue(decale(entree.getText()));
         });
 
+        down.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                 decrementFromProperty();
+            }
+        });
+
+        up.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                incrementFromProperty();
+            }
+        });
+
     }
 
+    private void incrementFromProperty(){
+        Integer comboboxValue = Integer.valueOf(observableStringValue.getValue());
+        Integer stepValue = Integer.valueOf(step.getText());
+        observableStringValue.setValue((comboboxValue + stepValue) + "");
+    }
+    private void decrementFromProperty(){
+        Integer comboboxValue = Integer.valueOf(observableStringValue.getValue());
+        Integer stepValue = Integer.valueOf(step.getText());
+        observableStringValue.setValue((comboboxValue - stepValue) + "");
+    }
 
     private String decale(String s){
         int in = 1;
@@ -134,4 +177,6 @@ public class Controller implements Initializable {
         }
         return result;
     }
+
+
 }
